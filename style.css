@@ -1,0 +1,28 @@
+body {
+  background: #652060;
+  background-image: url("background.svg");
+  background-repeat: no-repeat;
+  background-size: cover; 
+  font-family: 'Roboto Slab', serif;
+}
+
+form  {
+  font-weight: bold;
+}
+
+.card-header  {
+  background: #574F7C;
+  color: white;
+}
+
+.btn  {
+  background: #574F7C;
+}
+
+
+#jumbo  {
+  background: #574F7C;
+  color: white;
+  border: gray, solid, 2px;
+  font-size: 16px;
+}
