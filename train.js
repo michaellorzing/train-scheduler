@@ -1,7 +1,7 @@
 $(document).ready(function(){
   
-  var tFrequency = "";
-  var firstTime=""
+  // var tFrequency = $("#frequency");
+  // var firstTime = $("#first-scheduled")
 
 
   var config = {
@@ -22,7 +22,7 @@ $(document).ready(function(){
     event.preventDefault()
     var trainInput = $("#train-name-input").val().trim();
     var destInput = $("#destination-input").val().trim();
-    var firstTrain = moment($("#first-scheduled").val().trim(), "hh:mm").format("X");
+    var firstTrain = moment($("#first-scheduled").val().trim(), "hh:mm").format("hh:mm");
     var frequency = $("#frequency").val().trim();
 
     var newTrain = {
@@ -60,27 +60,35 @@ $(document).ready(function(){
     console.log(firstTrain);
     console.log(frequency);
 
-    var firstTrainFormat = moment.unix(firstTrain).format("hh:mm"); 
+    var firstTrainFormat = moment(firstTrain, "hh:mm").subtract(1, "years");
+    console.log(firstTrainFormat);
 
-    var trainTime = moment().diff(moment(firstTrain, "X"), "minutes");
+    var currentTime = moment();
+    console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+
+    var diffTime = moment().diff(moment(firstTrainFormat), "minutes");
+    console.log("DIFFERENCE IN TIME: " + diffTime);
+
+    var tRemainder = diffTime % frequency;
+    console.log(tRemainder);
+
+    var tMinutesTillTrain = frequency - tRemainder;
+    console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+    var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+    console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
 
     var newRow = $("<tr>").append(
       $("<td>").text(trainInput),
       $("<td>").text(destInput),
       $("<td>").text(frequency),
-      $("<td>").text(firstTrainFormat),
-      // $("<td>").text(empRate),
-      // $("<td>").text(empBilled)
+      $("<td>").text(nextTrain),
+      $("<td>").text(tMinutesTillTrain)
     );
 
     $("tbody").append(newRow);
 
   })
-
-
-
-
-
 
 
 });
