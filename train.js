@@ -1,8 +1,4 @@
-$(document).ready(function(){
-  
-  // var tFrequency = $("#frequency");
-  // var firstTime = $("#first-scheduled")
-
+$(document).ready(function () {
 
   var config = {
     apiKey: "AIzaSyDy8McCp_lNm8Jj-cFyfhh03NtGKOag7Uc",
@@ -15,15 +11,42 @@ $(document).ready(function(){
 
   firebase.initializeApp(config);
 
-  var database =  firebase.database();
+  var database = firebase.database();
 
 
-  $("#add-train-btn").on("click", function(event) {
+  //wrote a couple functions for a real time clock
+  function checkTime(i) {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  }
+
+  function startTime() {
+    var today = new Date();
+    var h = today.getHours();
+    var m = today.getMinutes();
+    var s = today.getSeconds();
+    // add a zero in front of numbers<10
+    m = checkTime(m);
+    s = checkTime(s);
+    $("#time").html(h + ":" + m + ":" + s)
+    t = setTimeout(function () {
+      startTime()
+    }, 500);
+  }
+
+  startTime();
+
+  //add on click event to prevent page refresh and used jQuery to get the values from the input fields and store them in variables
+  $("#add-train-btn").on("click", function (event) {
     event.preventDefault()
     var trainInput = $("#train-name-input").val().trim();
     var destInput = $("#destination-input").val().trim();
     var firstTrain = moment($("#first-scheduled").val().trim(), "hh:mm").format("hh:mm");
     var frequency = $("#frequency").val().trim();
+
+    //told firebase what the object should look like
 
     var newTrain = {
       name: trainInput,
@@ -31,13 +54,10 @@ $(document).ready(function(){
       first: firstTrain,
       frequency: frequency
     };
-   
-    database.ref().push(newTrain);
 
-    console.log(newTrain.name);
-    console.log(newTrain.destination);
-    console.log(newTrain.first);
-    console.log(newTrain.frequency);
+    //pushed the info to firebase
+
+    database.ref().push(newTrain);
 
     alert("Choo Choo! Here comes a new train!");
 
@@ -47,36 +67,22 @@ $(document).ready(function(){
     $("#frequency").val("");
   });
 
-  database.ref().on("child_added", function(childSnapshot){
-    console.log(childSnapshot.val());
+  //reference the dattabase for the snapshot of the object to later append it to the html. 
+
+  database.ref().on("child_added", function (childSnapshot) {
 
     var trainInput = childSnapshot.val().name;
     var destInput = childSnapshot.val().destination;
     var firstTrain = childSnapshot.val().first;
     var frequency = childSnapshot.val().frequency;
 
-    console.log(trainInput);
-    console.log(destInput);
-    console.log(firstTrain);
-    console.log(frequency);
 
     var firstTrainFormat = moment(firstTrain, "hh:mm").subtract(1, "years");
-    console.log(firstTrainFormat);
-
     var currentTime = moment();
-    console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
-
-    var diffTime = moment().diff(moment(firstTrainFormat), "minutes");
-    console.log("DIFFERENCE IN TIME: " + diffTime);
-
+    var diffTime = moment().diff(moment(firstTrainFormat), "minutes"); 
     var tRemainder = diffTime % frequency;
-    console.log(tRemainder);
-
     var tMinutesTillTrain = frequency - tRemainder;
-    console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
-
     var nextTrain = moment().add(tMinutesTillTrain, "minutes");
-    console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
 
     var newRow = $("<tr>").append(
       $("<td>").text(trainInput),

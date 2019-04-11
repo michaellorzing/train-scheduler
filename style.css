@@ -10,6 +10,11 @@ form  {
   font-weight: bold;
 }
 
+p{
+  text-align: center;
+  margin-bottom: 0;
+}
+
 .card-header  {
   background: #574F7C;
   color: white;
@@ -26,4 +31,8 @@ form  {
   border: gray, solid, 2px;
   font-size: 16px;
   padding: 35px;
+}
+
+#time {
+  text-align: center;
 }
